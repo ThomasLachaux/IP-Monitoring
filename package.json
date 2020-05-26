@@ -4,6 +4,10 @@
   "description": "Application de test technique",
   "main": "index.js",
   "author": "Thomas de Lachaux <thomas.delachaux@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thomaslacahaux/IP-Monitoring"
+  },
   "license": "GPL-3.0",
   "dependencies": {
     "axios": "^0.19.2",
@@ -34,6 +38,6 @@
     "start": "node src/index.js",
     "lint": "eslint src/ --ext .js",
     "lint:fix": "eslint --fix src/ --ext .js",
-    "api-check": "swagger-cli validate openapi.yml"
+    "api:check": "swagger-cli validate openapi.yml"
   }
 }
