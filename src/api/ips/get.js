@@ -1,22 +1,17 @@
-const {
-  badRequest,
-  unknown,
-  errorHandler,
-  notFound,
-} = require('../../utils/responses');
+const { errorHandler, notFound, success } = require('../../utils/responses');
 const { NotFoundError } = require('../../utils/errors');
-const { getPings } = require('../../database');
+const { getSummaryPings } = require('../../database');
 
 const get = async (req, res) => {
   try {
     const { ip } = req.params;
 
-    const pings = await getPings(req.app.locals.database, ip);
+    const pings = await getSummaryPings(req.app.locals.database, ip);
 
-    return res.status(200).json(pings).end();
+    return success(res, pings);
   } catch (err) {
     if (err instanceof NotFoundError) {
-      return notFound(res, 'The IP has no records');
+      return notFound(res, err.message);
     }
 
     return errorHandler(res, err);

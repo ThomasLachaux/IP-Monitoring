@@ -7,9 +7,8 @@ const checkIpv4 = (req, res, next) => {
 
   if (regex.test(ip)) {
     return next();
-  } else {
-    return badRequest(res, 'Invalid ip');
   }
+  return badRequest(res, 'Invalid ip');
 };
 
 module.exports = { checkIpv4 };

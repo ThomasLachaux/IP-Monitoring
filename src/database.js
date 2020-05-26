@@ -1,66 +1,77 @@
 const Influx = require('influx');
 const { NotFoundError } = require('./utils/errors');
+const log = require('./utils/log');
 
 // todo: centraliser
-const measurement = 'ips';
+const measurement = 'pings';
 
-const databaseName = () => {
-  if (!process.env.DATABASE_NAME) {
-    console.log('DATABASE_NAME environment variable missing');
-    process.exit(1);
-  }
-
-  return process.env.DATABASE_NAME;
+const query = (database, queryString) => {
+  log.info(`[InfluxDB] ${queryString}`);
+  return database.query(queryString);
 };
 
 const initDatabase = async () => {
+  const databaseName = process.env.DATABASE_NAME;
+
   const influx = new Influx.InfluxDB({
-    host: 'localhost',
-    database: databaseName(),
-    port: 8086,
+    host: process.env.DATABASE_HOST,
+    database: databaseName,
+    port: process.env.DATABASE_PORT,
   });
 
   const databases = await influx.getDatabaseNames();
 
-  if (!databases.includes(databaseName())) {
-    console.log(`Create database ${databaseName()}`);
-    await influx.createDatabase(databaseName());
+  if (!databases.includes(databaseName)) {
+    log.info(`Create database ${databaseName}`);
+    await influx.createDatabase(databaseName);
   }
 
   return influx;
 };
 
-const writePing = (database, host, ip, duration) => {
+const writePing = (database, host, ip, duration, ttl) => {
   return database.writePoints([
     {
       measurement,
       tags: { host, ip },
-      fields: { duration },
-      timestamp: new Date().getTime(),
+      fields: { duration, ttl },
     },
   ]);
 };
 
 const getPings = async (database, ip) => {
-  const query = `SELECT * FROM ${measurement} WHERE ip = '${ip}'`;
-  console.log(query);
+  const select = `SELECT *
+    FROM ${measurement}
+    WHERE "ip" = '${ip}'
+    GROUP BY "host","ip"`;
 
-  // format: [{time, duration, host, ip}]
-  const response = await database.query(query);
+  // format: [{time, duration, host, ip, ttl}]
+  const response = await query(database, select);
 
   if (response.length === 0) {
-    throw new NotFoundError('IP not found');
+    throw new NotFoundError('The IP could not be found');
   }
 
-  // format: {host, ip, pings: [time, duration]}
-  return {
-    host: response[0].host,
-    ip: response[0].ip,
-    pings: response.map((ping) => ({
-      time: ping.time,
-      duration: ping.duration,
-    })),
-  };
+  return response;
 };
 
-module.exports = { initDatabase, writePing, getPings };
+const getSummaryPings = async (database, ip) => {
+  const select = `SELECT COUNT("duration"), MEAN("duration") AS "meanDuration", MEAN("ttl") AS "meanTtl"
+    FROM ${measurement}
+    WHERE "ip" = '${ip}' AND "duration" != -1 AND "ttl" != -1
+    GROUP BY "host","ip"`;
+
+  // format: [{time, duration, host, ip, ttl}]
+  const response = await query(database, select);
+
+  if (response.length === 0) {
+    throw new NotFoundError('The IP could not be found or has no successful records');
+  }
+
+  const summary = response[0];
+  delete summary.time;
+
+  return summary;
+};
+
+module.exports = { initDatabase, writePing, getPings, getSummaryPings };

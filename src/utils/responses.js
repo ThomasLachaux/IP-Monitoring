@@ -1,3 +1,5 @@
+const log = require('./log');
+
 const success = (res, body) => res.status(200).json(body).end();
 
 const created = (res, body) => {
@@ -29,7 +31,7 @@ const unknown = (res, type) =>
     .end();
 
 const errorHandler = (res, err) => {
-  console.error(err);
+  log.error(err);
   return unknown(res);
 };
 

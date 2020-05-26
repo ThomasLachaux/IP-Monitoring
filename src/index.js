@@ -1,8 +1,9 @@
-require('dotenv').config();
-const ping = require('ping');
+require('./utils/env').checkEnv();
+const ping = require('./utils/ping');
 const { initDatabase, writePing } = require('./database');
 const { fetchHosts } = require('./host');
 const { initApi } = require('./api');
+const log = require('./utils/log');
 
 // list des ip
 const hosts = [
@@ -26,23 +27,17 @@ const hosts = [
 
 (async () => {
   try {
-    //const hosts = await fetchHosts();
+    // const hosts = await fetchHosts();
     const database = await initDatabase();
 
-    initApi(database);
+    initApi(database, hosts);
 
     hosts.forEach(async (host) => {
-      const res = await ping.promise.probe(host.ip);
+      const res = await ping(host.ip);
 
-      if (res.alive) {
-        console.log(`[${host.name}] ${res.time}ms`);
-        writePing(database, host.name, host.ip, res.time);
-      } else {
-        console.log(`[${host.name}] Communication impossible`);
-        writePing(database, host.name, host.ip, -1);
-      }
+      writePing(database, host.name, host.ip, res.duration, res.ttl);
     });
   } catch (err) {
-    console.error(err);
+    log.error(err);
   }
 })();

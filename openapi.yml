@@ -1,0 +1,152 @@
+openapi: 3.0.0
+
+info:
+  version: "1.0"
+  title: IP Monitoring - API
+  description: API used by the IP Monitoring Application
+  contact:
+    name: Thomas de Lachaux
+    email: thomas.delachaux@gmail.com
+  license:
+    name: Licence GPL-3.0
+    url: https://github.com/thomaslachaux/IP-Monitoring/blob/master/LICENSE
+
+servers:
+  - url: http://127.0.0.1:3000
+    description: Local server
+
+tags:
+  - name: General
+    description: General routes
+  - name: IP
+    description: IP Routes
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+
+    IPStats:
+      type: object
+      properties:
+        host:
+          type: string
+          description: Host name
+          example: google-dns
+        ip:
+          type: string
+          description: Host ip
+          example: 8.8.8.8
+        count:
+          type: number
+          description: Count of the successful pings
+        meanDuration:
+          type: number
+          description: Average of the answer time in milliseconds
+        meanTtl:
+          type: number
+          description: Average of the Time To Live
+
+    IPAvailibility:
+      type: object
+      properties:
+        host:
+          type: string
+          description: Host name
+          example: google-dns
+        ip:
+          type: string
+          description: Host ip
+          example: 8.8.8.8
+        hourAvailibility:
+          type: number
+          description: Availibility of the host during the last hour in percent
+        dayAvailibility:
+          type: number
+          description: Availibility of the host during the last day in percent
+        weekAvailibility:
+          type: number
+          description: Availibility of the host during the last week in percent
+
+  responses:
+    400BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+    404IpNotFound:
+      description: The IP couldn't be found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: The IP couldn't be found
+
+paths:
+  /:
+    get:
+      summary: Home Page
+      description: Lists all the monitored hosts and the navigation
+      tags:
+        - General
+      responses:
+        200:
+          description: Home Page
+          content:
+            text/html:
+              schema:
+                type: object
+
+  /ips/{ip}:
+    get:
+      summary: Availibility of an IP
+      tags:
+        - IP
+      parameters:
+        - in: path
+          name: ip
+          description: Host IP
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: The API has successfully found IP availibility stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IPStats"
+        400:
+          $ref: "#/components/responses/400BadRequest"
+        404:
+          $ref: "#/components/responses/404IpNotFound"
+
+  /ips/{ip}/availibility:
+    get:
+      summary: Stats of an IP
+      tags:
+        - IP
+      parameters:
+        - in: path
+          name: ip
+          description: Host IP
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: The API has successfully found IP availibility stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IPAvailibility"
+        400:
+          $ref: "#/components/responses/400BadRequest"
+        404:
+          $ref: "#/components/responses/404IpNotFound"
