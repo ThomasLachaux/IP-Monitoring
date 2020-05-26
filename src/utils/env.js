@@ -1,10 +1,22 @@
 require('dotenv').config();
 const log = require('./log');
 
-const environmentVariables = ['DATABASE_NAME', 'DATABASE_HOST', 'DATABASE_PORT', 'HOST_POOL_URL', 'API_PORT'];
+const requiredEnvironmentVariables = [
+  'HOST_POOL_URL',
+  'API_PORT',
+  'PING_INTERVAL',
+  'INFLUXDB_HOST',
+  'INFLUXDB_DB',
+  'INFLUXDB_USER',
+  'INFLUXDB_USER_PASSWORD',
+  'INFLUXDB_PORT',
+];
 
+/**
+ * Checks if all the required environment variables are defined
+ */
 const checkEnv = () => {
-  environmentVariables.forEach((variable) => {
+  requiredEnvironmentVariables.forEach((variable) => {
     if (process.env[variable] === undefined) {
       log.error(`${variable} is not defined !`);
       process.exit(1);

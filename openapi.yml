@@ -1,14 +1,14 @@
 openapi: 3.0.0
 
 info:
-  version: "1.0"
+  version: '1.0'
   title: IP Monitoring - API
   description: API used by the IP Monitoring Application
   contact:
     name: Thomas de Lachaux
     email: thomas.delachaux@gmail.com
   license:
-    name: Licence GPL-3.0
+    name: Licence MIT
     url: https://github.com/thomaslachaux/IP-Monitoring/blob/master/LICENSE
 
 servers:
@@ -77,14 +77,14 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Error"
+            $ref: '#/components/schemas/Error'
 
     404IpNotFound:
       description: The IP couldn't be found
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Error"
+            $ref: '#/components/schemas/Error'
           example:
             error: The IP couldn't be found
 
@@ -121,11 +121,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IPStats"
+                $ref: '#/components/schemas/IPStats'
         400:
-          $ref: "#/components/responses/400BadRequest"
+          $ref: '#/components/responses/400BadRequest'
         404:
-          $ref: "#/components/responses/404IpNotFound"
+          $ref: '#/components/responses/404IpNotFound'
 
   /ips/{ip}/availibility:
     get:
@@ -145,8 +145,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IPAvailibility"
+                $ref: '#/components/schemas/IPAvailibility'
         400:
-          $ref: "#/components/responses/400BadRequest"
+          $ref: '#/components/responses/400BadRequest'
         404:
-          $ref: "#/components/responses/404IpNotFound"
+          $ref: '#/components/responses/404IpNotFound'

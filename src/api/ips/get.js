@@ -2,6 +2,11 @@ const { errorHandler, notFound, success } = require('../../utils/responses');
 const { NotFoundError } = require('../../utils/errors');
 const { getSummaryPings } = require('../../database');
 
+/**
+ * Give count, average duration and average ttl given an IP
+ * @param {Request} req express request
+ * @param {Response} res express response
+ */
 const get = async (req, res) => {
   try {
     const { ip } = req.params;

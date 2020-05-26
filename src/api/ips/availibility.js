@@ -4,10 +4,10 @@ const { NotFoundError } = require('../../utils/errors');
 const { getPings } = require('../../database');
 
 /**
- *
+ * Computes the availibility from a set of pings
  * @param {Array} pings initial data
  * @param {Number} range filters by last X hours
- * @returns {Number} availibility
+ * @returns {Number} availibility in percents
  */
 const getAvailibility = (pings, range) => {
   const startTime = moment().subtract(range, 'hour');
@@ -23,6 +23,11 @@ const getAvailibility = (pings, range) => {
   );
 };
 
+/**
+ * List hour, day, and week availibility for a given ip
+ * @param {Request} req express request
+ * @param {Response} res express response
+ */
 const availibility = async (req, res) => {
   try {
     const { ip } = req.params;

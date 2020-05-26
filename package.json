@@ -8,7 +8,7 @@
     "type": "git",
     "url": "https://github.com/thomaslacahaux/IP-Monitoring"
   },
-  "license": "GPL-3.0",
+  "license": "MIT",
   "dependencies": {
     "axios": "^0.19.2",
     "dotenv": "^8.2.0",
@@ -16,6 +16,7 @@
     "express": "^4.17.1",
     "helmet": "^3.22.0",
     "influx": "^5.5.1",
+    "jsdoc": "^3.6.4",
     "moment": "^2.26.0",
     "morgan": "^1.10.0",
     "ping": "^0.2.3",
@@ -34,10 +35,11 @@
     "prettier": "^2.0.5"
   },
   "scripts": {
-    "dev": "nodemon src/index.js",
-    "start": "node src/index.js",
+    "dev": "npm run docs:generate && nodemon src/index.js",
+    "start": "npm run docs:generate && node src/index.js",
     "lint": "eslint src/ --ext .js",
     "lint:fix": "eslint --fix src/ --ext .js",
-    "api:check": "swagger-cli validate openapi.yml"
+    "api:check": "swagger-cli validate openapi.yml",
+    "docs:generate": "jsdoc --readme README.md -r src -r captures -d docs"
   }
 }

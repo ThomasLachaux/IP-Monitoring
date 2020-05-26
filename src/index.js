@@ -1,7 +1,6 @@
 require('./utils/env').checkEnv();
-const ping = require('./utils/ping');
-const { initDatabase, writePing } = require('./database');
-const { fetchHosts } = require('./host');
+const { initDatabase } = require('./database');
+const { fetchHosts, startPingInterval } = require('./utils/ping');
 const { initApi } = require('./api');
 const log = require('./utils/log');
 
@@ -30,13 +29,8 @@ const hosts = [
     // const hosts = await fetchHosts();
     const database = await initDatabase();
 
+    startPingInterval(hosts, database);
     initApi(database, hosts);
-
-    hosts.forEach(async (host) => {
-      const res = await ping(host.ip);
-
-      writePing(database, host.name, host.ip, res.duration, res.ttl);
-    });
   } catch (err) {
     log.error(err);
   }

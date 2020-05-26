@@ -2,21 +2,31 @@ const Influx = require('influx');
 const { NotFoundError } = require('./utils/errors');
 const log = require('./utils/log');
 
-// todo: centraliser
+// The database only uses one table
 const measurement = 'pings';
 
+/**
+ * Makes and logs a InfluxDB query
+ * @param {InfluxDB} database influxdb database
+ * @param {String} queryString influxdb query
+ */
 const query = (database, queryString) => {
   log.info(`[InfluxDB] ${queryString}`);
   return database.query(queryString);
 };
 
+/**
+ * Connects to the database and create it if not exists
+ */
 const initDatabase = async () => {
-  const databaseName = process.env.DATABASE_NAME;
+  const databaseName = process.env.INFLUXDB_DB;
 
   const influx = new Influx.InfluxDB({
-    host: process.env.DATABASE_HOST,
+    host: process.env.INFLUXDB_HOST,
+    username: process.env.INFLUXDB_USER,
+    password: process.env.INFLUXDB_USER_PASSWORD,
     database: databaseName,
-    port: process.env.DATABASE_PORT,
+    port: 8086,
   });
 
   const databases = await influx.getDatabaseNames();
@@ -29,6 +39,14 @@ const initDatabase = async () => {
   return influx;
 };
 
+/**
+ * Adds a ping value
+ * @param {InfluxDB} database influxdb database
+ * @param {String} host host name
+ * @param {String} ip host ip
+ * @param {Number} duration host duration in ms. -1 if the host didn't respond
+ * @param {Number} ttl ttl. -1 if the host didn't respond
+ */
 const writePing = (database, host, ip, duration, ttl) => {
   return database.writePoints([
     {
@@ -39,6 +57,11 @@ const writePing = (database, host, ip, duration, ttl) => {
   ]);
 };
 
+/**
+ * Fetch all the values from an ip
+ * @param {InfluxDB} database influxdb database
+ * @param {String} ip host ip
+ */
 const getPings = async (database, ip) => {
   const select = `SELECT *
     FROM ${measurement}
@@ -55,6 +78,11 @@ const getPings = async (database, ip) => {
   return response;
 };
 
+/**
+ * Get global stats (total, average duration, average ttl) from an ip
+ * @param {InfluxDB} database influxdb database
+ * @param {String} ip host ip
+ */
 const getSummaryPings = async (database, ip) => {
   const select = `SELECT COUNT("duration"), MEAN("duration") AS "meanDuration", MEAN("ttl") AS "meanTtl"
     FROM ${measurement}

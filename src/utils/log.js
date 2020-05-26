@@ -5,6 +5,11 @@ const { combine, colorize, printf } = format;
 
 const customFormat = printf(({ level, message }) => `${moment().format('H:mm:ss')} ${level}: ${message}`);
 
+/**
+ * Creates a logger with 2 transports:
+ * - A console transport to log everything
+ * - A file transport to log all the errors
+ */
 const log = createLogger({
   transports: [
     new transports.Console({ level: 'debug' }),

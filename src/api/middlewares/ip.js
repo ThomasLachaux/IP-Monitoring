@@ -1,5 +1,11 @@
 const { badRequest } = require('../../utils/responses');
 
+/**
+ * Middleware to check if the ip parameter is in ipv4 format
+ * @param {Request} req express request
+ * @param {Response} res express response
+ * @param {NextFunction} next express next middleware
+ */
 const checkIpv4 = (req, res, next) => {
   const { ip } = req.params;
 

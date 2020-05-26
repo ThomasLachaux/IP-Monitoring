@@ -1,5 +1,9 @@
 const log = require('./log');
 
+/**
+ * The following functions HTTP responses
+ */
+
 const success = (res, body) => res.status(200).json(body).end();
 
 const created = (res, body) => {
