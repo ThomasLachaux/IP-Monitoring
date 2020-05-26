@@ -31,7 +31,7 @@ Go to [http://localhost:8080](http://localhost:8080) and enjoy !
 
 # Capture
 
-![Capture](captures/capture1.jpg)
+![Capture](https://raw.githubusercontent.com/ThomasLachaux/IP-Monitoring/master/captures/capture1.jpg)
 
 # License
 
