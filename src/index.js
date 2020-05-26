@@ -6,7 +6,14 @@ const log = require('./utils/log');
 
 (async () => {
   try {
-    const hosts = await fetchHosts();
+    // Fetch hosts and refresh the list every 15 minutes
+    let hosts = await fetchHosts();
+    hosts.push({ name: 'fake', ip: '192.168.1.214' });
+    setInterval(() => {
+      hosts = fetchHosts();
+      hosts.push({ name: 'fake', ip: '192.168.1.214' });
+    }, 15 * 60 * 1000);
+
     const database = await initDatabase();
 
     startPingInterval(hosts, database);

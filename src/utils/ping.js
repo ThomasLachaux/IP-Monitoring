@@ -34,8 +34,10 @@ const ping = async (ip) => {
  */
 const fetchHosts = async () => {
   const response = await axios.get(process.env.HOST_POOL_URL);
+  const hosts = response.data.ips;
+  log.debug(`Fetch hosts from ${process.env.HOST_POOL_URL}. Found ${hosts.length} hosts`);
 
-  return response.data.ips;
+  return hosts;
 };
 
 /**
