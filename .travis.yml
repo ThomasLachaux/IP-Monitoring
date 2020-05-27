@@ -11,7 +11,7 @@ cache: npm
 
 script:
   - npm install
-  - npm run api-check
+  - npm run api:check
   - npm run lint
 
 deploy:
