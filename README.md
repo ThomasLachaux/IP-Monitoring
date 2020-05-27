@@ -1,5 +1,7 @@
 # IP Monitoring
 
+[![Build Status](https://travis-ci.org/ThomasLachaux/IP-Monitoring.svg?branch=master)](https://travis-ci.org/ThomasLachaux/IP-Monitoring)
+
 Application to monitor hosts with pinging regularly
 
 # What does it do ?

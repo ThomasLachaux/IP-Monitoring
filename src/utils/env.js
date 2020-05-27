@@ -5,6 +5,8 @@ const requiredEnvironmentVariables = [
   'HOST_POOL_URL',
   'API_PORT',
   'PING_INTERVAL',
+  'FETCH_HOST_INTERVAL',
+  'ALERT_HOST_DOWN_AFTER',
   'MAIL_HOST',
   'MAIL_PORT',
   'MAIL_USER',

@@ -5,7 +5,7 @@ const { isHostMarkedAvailable, writeHost } = require('../models/hosts');
 const log = require('./log');
 
 /**
- * Checks if one host has been down more that 5 minutes.
+ * Checks if one host has been down more that ALERT_HOST_DOWN_AFTER minutes.
  * @async
  * @param {Object} host host object {name, ip}
  * @param {InfluxDB} database influxdb database
@@ -13,8 +13,8 @@ const log = require('./log');
 const isHostDown = async (host, database) => {
   const pings = await getPings(database, host.ip);
 
-  // Get the availability in 5 minutes
-  const availibility = getAvailibility(pings, 5 / 60);
+  // Get the availability in ALERT_HOST_DOWN_AFTER minutes
+  const availibility = getAvailibility(pings, process.env.ALERT_HOST_DOWN_AFTER / 60);
 
   return availibility === 0;
 };
@@ -61,14 +61,16 @@ const alertByMailIfNeeded = async (hosts, database) => {
       // If the host was available and now is down
       if (wasAvailable && isDown) {
         writeHost(database, host.name, host.ip, false);
-        log.error(`[${host.name}] ${host.ip} has be down for more than 5 minutes`);
+        log.error(`[${host.name}] ${host.ip} has be down for more than ${process.env.ALERT_HOST_DOWN_AFTER} minutes`);
         newDownHosts.push(host);
       }
 
       // If the host wasn't available and now is up
       else if (!wasAvailable && !isDown) {
         writeHost(database, host.name, host.ip, true);
-        log.info(`RESOLVED : [${host.name}] ${host.ip} has be down for more than 5 minutes`);
+        log.info(
+          `RESOLVED : [${host.name}] ${host.ip} has be down for more than ${process.env.ALERT_HOST_DOWN_AFTER} minutes`,
+        );
       }
     }),
   );
@@ -81,7 +83,10 @@ const alertByMailIfNeeded = async (hosts, database) => {
     const summary = newDownHosts.map((host) => `${host.name} (${host.ip})`).join(', ');
 
     try {
-      await sendMail('Alert ! Hosts Down !', `The following hosts have been down for more than 5 minutes: ${summary}`);
+      await sendMail(
+        'Alert ! Hosts Down !',
+        `The following hosts have been down for more than ${process.env.ALERT_HOST_DOWN_AFTER} minutes: ${summary}`,
+      );
     } catch (err) {
       log.error('Failed to send the mail');
       log.error(err);
@@ -89,4 +94,16 @@ const alertByMailIfNeeded = async (hosts, database) => {
   }
 };
 
-module.exports = { alertByMailIfNeeded };
+/**
+ * Starts to check every X seconds if an host is down
+ * @param {Array} hosts pool list
+ * @param {InfluxDB} database influxdb database
+ */
+const startAlertCheckInterval = (hosts, database) => {
+  log.info(`Checks if host has been down every ${process.env.ALERT_HOST_DOWN_AFTER} minutes`);
+  return setInterval(() => {
+    alertByMailIfNeeded(hosts, database);
+  }, process.env.ALERT_HOST_DOWN_AFTER * 60 * 1000);
+};
+
+module.exports = { startAlertCheckInterval };
