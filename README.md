@@ -9,6 +9,7 @@ Application to monitor hosts with pinging regularly
 IP Monitoring is a tool to monitor hosts IP.
 The service fetches a list of IP from a JSON with the format {ips: [{name: string, ip: string}]} and refreshes it regularly.
 Then, it pings regularly all hosts. Stats are available across an API.
+If an host is down for more than 5 minutes (configurable), it sends an alert by email
 
 # Installation
 
