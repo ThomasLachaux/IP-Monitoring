@@ -1,0 +1,25 @@
+language: node_js
+
+node_js:
+  - 'lts/*'
+
+branches:
+  only:
+    - master
+
+cache: npm
+
+script:
+  - npm install
+  - npm run api-check
+  - npm run lint
+
+deploy:
+  - provider: openshift
+    server: $OPENSHIFT_SERVER
+    project: $OPENSHIFT_PROJECT
+    app: $OPENSHIFT_APP
+    token: $OPENSHIFT_TOKEN
+    on:
+      branch: master
+    edge: true

@@ -1,4 +1,3 @@
-const { NotFoundError } = require('../utils/errors');
 const { query } = require('../database');
 
 const measurement = 'hosts';
