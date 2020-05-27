@@ -1,7 +1,7 @@
 const axios = require('axios');
 const pingLib = require('ping');
 const log = require('./log');
-const { writePing } = require('../database');
+const { writePing } = require('../models/pings');
 
 /**
  * Scraps the TTL from the output of the ping command
@@ -15,6 +15,7 @@ const scrapTTL = (output) => {
 
 /**
  * Sends a ICMP request to a specific IP
+ * @async
  * @param {String} ip host ip
  */
 const ping = async (ip) => {
@@ -31,6 +32,7 @@ const ping = async (ip) => {
 /**
  * Fetch the hosts from the pool url
  * The format of the pool must be {ips: [{name: string, ip: string}]}
+ * @async
  */
 const fetchHosts = async () => {
   const response = await axios.get(process.env.HOST_POOL_URL);
@@ -44,6 +46,7 @@ const fetchHosts = async () => {
  * Create an interval to ping all hosts
  * @param {Array} hosts pool list
  * @param {InfluxDB} database influxdb database
+ * @async
  */
 const startPingInterval = async (hosts, database) => {
   const interval = () => {

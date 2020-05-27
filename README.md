@@ -2,6 +2,12 @@
 
 Application to monitor hosts with pinging regularly
 
+# What does it do ?
+
+IP Monitoring is a tool to monitor hosts IP.
+The service fetches a list of IP from a JSON with the format {ips: [{name: string, ip: string}]} and refreshes it regularly.
+Then, it pings regularly all hosts. Stats are available across an API.
+
 # Installation
 
 _Docker and Docker Compose are required_

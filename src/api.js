@@ -1,15 +1,20 @@
 const http = require('http');
-const childProcess = require('child_process');
 const path = require('path');
 const express = require('express');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const swagger = require('swagger-ui-express');
 const yaml = require('yamljs');
-const ips = require('./ips');
-const { notFound } = require('../utils/responses');
-const log = require('../utils/log');
+const ips = require('./controllers');
+const { notFound } = require('./utils/responses');
+const log = require('./utils/log');
 
+/**
+ * Initilize API
+ * @async
+ * @param {Object} host host object {name, ip}
+ * @param {InfluxDB} database influxdb database
+ */
 const initApi = async (database, hosts) => {
   // API initialization
   const app = express();

@@ -1,9 +1,10 @@
-const { errorHandler, notFound, success } = require('../../utils/responses');
-const { NotFoundError } = require('../../utils/errors');
-const { getSummaryPings } = require('../../database');
+const { errorHandler, notFound, success } = require('../utils/responses');
+const { NotFoundError } = require('../utils/errors');
+const { getSummaryPings } = require('../models/pings');
 
 /**
  * Give count, average duration and average ttl given an IP
+ * @async
  * @param {Request} req express request
  * @param {Response} res express response
  */

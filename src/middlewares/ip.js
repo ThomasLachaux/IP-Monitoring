@@ -1,4 +1,4 @@
-const { badRequest } = require('../../utils/responses');
+const { badRequest } = require('../utils/responses');
 
 /**
  * Middleware to check if the ip parameter is in ipv4 format

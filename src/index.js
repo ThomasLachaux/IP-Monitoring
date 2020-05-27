@@ -3,6 +3,7 @@ const { initDatabase } = require('./database');
 const { fetchHosts, startPingInterval } = require('./utils/ping');
 const { initApi } = require('./api');
 const log = require('./utils/log');
+const { alertByMailIfNeeded } = require('./utils/alerting');
 
 (async () => {
   try {
@@ -15,6 +16,14 @@ const log = require('./utils/log');
     }, 15 * 60 * 1000);
 
     const database = await initDatabase();
+
+    setTimeout(() => {
+      alertByMailIfNeeded(hosts, database);
+    }, 3 * 1000);
+
+    // setInterval(() => {
+    //   alertByMailIfNeeded(hosts, database);
+    // }, 5);
 
     startPingInterval(hosts, database);
     initApi(database, hosts);
